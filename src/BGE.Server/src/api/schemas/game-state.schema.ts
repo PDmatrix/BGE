@@ -1,11 +1,7 @@
-import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-export const GameStateSchema = new mongoose.Schema({
-  gameToken: String,
-  playerState: {
-    field: [[String]],
-  },
-  userId: String,
-  opponentGameId: mongoose.Schema.Types.ObjectId,
-  turn: Boolean,
+export const GameStateSchema = new Schema({
+  token: String,
+  status: { type: String, enum: ['NotStarted', 'Playing', 'Finished'] },
+  turn: Schema.Types.ObjectId,
 });
