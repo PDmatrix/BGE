@@ -3,9 +3,10 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { SIGNALR_CONNECTION } from '../common/constants';
 import { ShootResponse } from './dto/shoot-response.dto';
-import { GameState } from './interfaces/game-state.interface';
+import { GameState, GameStatus } from './interfaces/game-state.interface';
 import { PlayerState } from './interfaces/player-state.interface';
 import { GameStateRepository } from './repositories/game-state.repository';
+import { PlayerStateRepository } from './repositories/player-state.repository';
 
 function generateRandomToken() {
   return (
@@ -23,6 +24,7 @@ export class ApiService {
   constructor(
     @Inject(SIGNALR_CONNECTION) private readonly connection: HubConnection,
     private readonly gameStateRepository: GameStateRepository,
+    private readonly playerStateRepository: PlayerStateRepository,
     private readonly authService: AuthService,
   ) {}
 
@@ -121,11 +123,22 @@ export class ApiService {
     });
 
     await this.gameStateRepository.create({
-      playerState,
-      gameToken,
-      userId,
-      turn: true,
-      opponentGameId: null,
+      token: gameToken,
+      status: GameStatus.NotStarted,
+      turn: userId,
+    });
+  }
+
+  public async test(userId: string) {
+    const gameState = await this.gameStateRepository.create({
+      status: GameStatus.NotStarted,
+      token: 'token',
+      turn: userId,
+    });
+
+    const pl = await this.playerStateRepository.create({
+      field: [['aa'], ['bb']],
+      gameStateId: gameState,
     });
   }
 }

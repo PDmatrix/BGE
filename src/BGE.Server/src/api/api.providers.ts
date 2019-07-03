@@ -1,13 +1,15 @@
 import * as signalR from '@aspnet/signalr';
 import { Provider } from '@nestjs/common';
 import { Connection } from 'mongoose';
-import { ConfigService } from '../config/config.service';
 import {
   DATABASE_CONNECTION,
   GAME_STATE_MODEL,
+  PLAYER_STATE_MODEL,
   SIGNALR_CONNECTION,
 } from '../common/constants';
+import { ConfigService } from '../config/config.service';
 import { GameStateSchema } from './schemas/game-state.schema';
+import { PlayerStateSchema } from './schemas/player-state.schema';
 
 const signalRProvider: Provider = {
   provide: SIGNALR_CONNECTION,
@@ -41,4 +43,15 @@ const gameStateProvider: Provider = {
   inject: [DATABASE_CONNECTION],
 };
 
-export const apiProviders: Provider[] = [signalRProvider, gameStateProvider];
+const playerStateProvider: Provider = {
+  provide: PLAYER_STATE_MODEL,
+  useFactory: (connection: Connection) =>
+    connection.model('PlayerState', PlayerStateSchema),
+  inject: [DATABASE_CONNECTION],
+};
+
+export const apiProviders: Provider[] = [
+  signalRProvider,
+  gameStateProvider,
+  playerStateProvider,
+];

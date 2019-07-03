@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { GAME_STATE_MODEL } from '../../common/constants';
-import { GameState } from '../interfaces/game-state.interface';
+import { GameState, IGameState } from '../interfaces/game-state.interface';
 
 @Injectable()
 export class GameStateRepository {
@@ -10,26 +10,19 @@ export class GameStateRepository {
     private readonly gameStateModel: Model<GameState>,
   ) {}
 
-  public create(doc: Partial<GameState>): Promise<GameState> {
+  public create(doc: IGameState): Promise<IGameState> {
     return new this.gameStateModel(doc).save();
   }
 
-  public findByUserId(userId: string): Promise<GameState> {
-    return this.gameStateModel.findOne({ userId }).exec();
-  }
-
-  public findById(id: string): Promise<GameState> {
+  public findById(id: string): Promise<IGameState> {
     return this.gameStateModel.findOne({ _id: id }).exec();
   }
 
-  public findByGameToken(gameToken: string): Promise<GameState> {
-    return this.gameStateModel.findOne({ gameToken }).exec();
+  public findByGameToken(token: string): Promise<IGameState> {
+    return this.gameStateModel.findOne({ token }).exec();
   }
 
-  public updateOneById(
-    id: string,
-    doc: Partial<GameState>,
-  ): Promise<GameState> {
+  public updateOneById(id: string, doc: IGameState): Promise<IGameState> {
     return this.gameStateModel.updateOne({ _id: id }, doc).exec();
   }
 }
