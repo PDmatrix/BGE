@@ -14,11 +14,11 @@ export class GameStateRepository {
     return new this.gameStateModel(doc).save();
   }
 
-  public findById(id: string): Promise<IGameState> {
+  public findById(id: string): Promise<IGameState | null> {
     return this.gameStateModel.findOne({ _id: id }).exec();
   }
 
-  public findByGameToken(token: string): Promise<IGameState> {
+  public findByGameToken(token: string): Promise<IGameState | null> {
     return this.gameStateModel.findOne({ token }).exec();
   }
 

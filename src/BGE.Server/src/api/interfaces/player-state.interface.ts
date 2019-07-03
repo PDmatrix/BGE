@@ -1,13 +1,12 @@
 import { Document } from 'mongoose';
-import { GameState } from './game-state.interface';
+import { IGameState } from './game-state.interface';
 
 export interface IPlayerState {
+  readonly _id?: string;
   userId: string;
-  opponentStateId: PlayerState['userId'];
-  gameStateId: GameState['_id'];
+  opponentStateId: IPlayerState['_id'];
+  gameStateId: IGameState['_id'];
   field: string[][];
 }
-
-// Need to export model
 
 export type PlayerState = IPlayerState & Document;

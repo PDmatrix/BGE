@@ -27,6 +27,12 @@ export class ApiController {
   }
 
   @HttpCode(200)
+  @Post('/test')
+  public async test() {
+    return await this.apiService.test('1');
+  }
+
+  @HttpCode(200)
   @Post('/start')
   public async start(@Body() startRequest: StartRequest) {
     return await this.apiService.start(

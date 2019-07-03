@@ -3,8 +3,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { SIGNALR_CONNECTION } from '../common/constants';
 import { ShootResponse } from './dto/shoot-response.dto';
-import { GameState, GameStatus } from './interfaces/game-state.interface';
-import { PlayerState } from './interfaces/player-state.interface';
+import { GameStatus, IGameState } from './interfaces/game-state.interface';
 import { GameStateRepository } from './repositories/game-state.repository';
 import { PlayerStateRepository } from './repositories/player-state.repository';
 
@@ -130,15 +129,11 @@ export class ApiService {
   }
 
   public async test(userId: string) {
-    const gameState = await this.gameStateRepository.create({
+    const gameState: IGameState = await this.gameStateRepository.create({
       status: GameStatus.NotStarted,
       token: 'token',
-      turn: userId,
+      turn: null,
     });
-
-    const pl = await this.playerStateRepository.create({
-      field: [['aa'], ['bb']],
-      gameStateId: gameState,
-    });
+    return gameState;
   }
 }

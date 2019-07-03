@@ -6,10 +6,16 @@ import { ApiController } from './api.controller';
 import { apiProviders } from './api.providers';
 import { ApiService } from './api.service';
 import { GameStateRepository } from './repositories/game-state.repository';
+import { PlayerStateRepository } from './repositories/player-state.repository';
 
 @Module({
   controllers: [ApiController],
-  providers: [ApiService, GameStateRepository, ...apiProviders],
+  providers: [
+    ApiService,
+    GameStateRepository,
+    PlayerStateRepository,
+    ...apiProviders,
+  ],
   imports: [ConfigModule, AuthModule, DatabaseModule],
 })
 export class ApiModule {}

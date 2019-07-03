@@ -17,11 +17,11 @@ export class PlayerStateRepository {
     return new this.playerStateModel(doc).save();
   }
 
-  public findByUserId(userId: string): Promise<IPlayerState> {
+  public findByUserId(userId: string): Promise<IPlayerState | null> {
     return this.playerStateModel.findOne({ userId }).exec();
   }
 
-  public findById(id: string): Promise<IPlayerState> {
+  public findById(id: string): Promise<IPlayerState | null> {
     return this.playerStateModel.findOne({ _id: id }).exec();
   }
 

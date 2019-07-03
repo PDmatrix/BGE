@@ -7,11 +7,10 @@ export enum GameStatus {
 }
 
 export interface IGameState {
+  readonly _id?: string;
   token: string;
   status: GameStatus;
-  turn: string;
+  turn: string | null;
 }
-
-// Need to export model
 
 export type GameState = IGameState & Document;
