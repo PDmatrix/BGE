@@ -5,5 +5,5 @@ export class AcceptRequest {
   readonly userId: string;
 
   @IsString()
-  readonly gameToken?: string;
+  readonly gameToken: string;
 }
