@@ -7,6 +7,7 @@ import { GameStatus, IGameState } from './interfaces/game-state.interface';
 import { IPlayerState } from './interfaces/player-state.interface';
 import { GameStateRepository } from './repositories/game-state.repository';
 import { PlayerStateRepository } from './repositories/player-state.repository';
+import { StartResponse } from './dto/start-response.dto';
 
 function generateRandomToken() {
   return (
@@ -28,27 +29,24 @@ export class ApiService {
     private readonly authService: AuthService,
   ) {}
 
-  public async accept(userId: string, gameToken: string) {
+  public async accept(userId: string, fromUserId: string, gameToken: string) {
     const gameState = await this.gameStateRepository.findByGameToken(gameToken);
     if (!gameState) {
       throw new BadRequestException('Provided gameToken is invalid');
     }
 
-    const playerState: IPlayerState = await this.connection.invoke(
+    const playerState: StartResponse = await this.connection.invoke(
       'StartGame',
       { rows: gameState.rows, cols: gameState.cols },
     );
 
-    const newGameState = await this.gameStateRepository.create({
-      playerState,
-      gameToken,
+    await this.playerStateRepository.create({
+      field: playerState.field,
+      gameStateId: gameState._id,
+      opponentStateId: fromUserId,
       userId,
-      opponentGameId: gameState._id,
-      turn: false,
     });
-    await this.gameStateRepository.updateOneById(gameState._id, {
-      opponentGameId: newGameState._id,
-    });
+
     await this.connection.send('AcceptMarker', gameState.userId);
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
