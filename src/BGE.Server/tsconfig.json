@@ -9,7 +9,14 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true
   },
   "exclude": ["node_modules"]
 }

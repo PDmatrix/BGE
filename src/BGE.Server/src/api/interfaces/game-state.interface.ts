@@ -11,6 +11,8 @@ export interface IGameState {
   token: string;
   status: GameStatus;
   turn: string | null;
+  rows: number;
+  cols: number;
 }
 
 export type GameState = IGameState & Document;

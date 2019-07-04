@@ -4,6 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { SIGNALR_CONNECTION } from '../common/constants';
 import { ShootResponse } from './dto/shoot-response.dto';
 import { GameStatus, IGameState } from './interfaces/game-state.interface';
+import { IPlayerState } from './interfaces/player-state.interface';
 import { GameStateRepository } from './repositories/game-state.repository';
 import { PlayerStateRepository } from './repositories/player-state.repository';
 
@@ -33,10 +34,10 @@ export class ApiService {
       throw new BadRequestException('Provided gameToken is invalid');
     }
 
-    const playerState: PlayerState = await this.connection.invoke('StartGame', {
-      rows: gameState.playerState.field.length,
-      cols: gameState.playerState.field[0].length,
-    });
+    const playerState: IPlayerState = await this.connection.invoke(
+      'StartGame',
+      { rows: gameState.rows, cols: gameState.cols },
+    );
 
     const newGameState = await this.gameStateRepository.create({
       playerState,
@@ -116,24 +117,18 @@ export class ApiService {
     userId: string,
     gameToken: string,
   ) {
-    const playerState: PlayerState = await this.connection.invoke('StartGame', {
-      rows,
-      cols,
-    });
+    const playerState: IPlayerState = await this.connection.invoke(
+      'StartGame',
+      {
+        rows,
+        cols,
+      },
+    );
 
     await this.gameStateRepository.create({
       token: gameToken,
       status: GameStatus.NotStarted,
       turn: userId,
     });
-  }
-
-  public async test(userId: string) {
-    const gameState: IGameState = await this.gameStateRepository.create({
-      status: GameStatus.NotStarted,
-      token: 'token',
-      turn: null,
-    });
-    return gameState;
   }
 }
