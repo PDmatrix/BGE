@@ -2,7 +2,7 @@ import { Schema } from 'mongoose';
 
 export const PlayerStateSchema = new Schema({
   userId: String,
-  opponentStateId: Schema.Types.ObjectId,
+  opponentStateId: { type: Schema.Types.ObjectId, ref: 'PlayerState' },
   field: [[String]],
-  gameStateId: Schema.Types.ObjectId,
+  gameStateId: { type: Schema.Types.ObjectId, ref: 'GameState' },
 });

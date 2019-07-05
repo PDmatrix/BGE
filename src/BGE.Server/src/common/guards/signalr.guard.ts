@@ -1,7 +1,6 @@
 import { HubConnection, HubConnectionState } from '@aspnet/signalr';
 import {
   CanActivate,
-  ExecutionContext,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -14,7 +13,7 @@ export class SignalRGuard implements CanActivate {
     @Inject(SIGNALR_CONNECTION) private readonly connection: HubConnection,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+  canActivate(): boolean | Promise<boolean> {
     if (this.connection.state === HubConnectionState.Disconnected) {
       throw new InternalServerErrorException(
         'Connection with WebSocket is not established!',
