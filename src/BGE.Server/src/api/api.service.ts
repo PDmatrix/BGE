@@ -1,13 +1,11 @@
-import { HubConnection } from '@aspnet/signalr';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
-import { SIGNALR_CONNECTION } from '../common/constants';
 import { ShootResponse } from './dto/shoot-response.dto';
+import { EngineService } from './engine.service';
 import { GameStatus, IGameState } from './interfaces/game-state.interface';
 import { IPlayerState } from './interfaces/player-state.interface';
 import { GameStateRepository } from './repositories/game-state.repository';
 import { PlayerStateRepository } from './repositories/player-state.repository';
-import { StartResponse } from './dto/start-response.dto';
 
 function generateRandomToken() {
   return (
@@ -23,7 +21,7 @@ function generateRandomToken() {
 @Injectable()
 export class ApiService {
   constructor(
-    @Inject(SIGNALR_CONNECTION) private readonly connection: HubConnection,
+    private readonly engineService: EngineService,
     private readonly gameStateRepository: GameStateRepository,
     private readonly playerStateRepository: PlayerStateRepository,
     private readonly authService: AuthService,
@@ -35,9 +33,9 @@ export class ApiService {
       throw new BadRequestException('Provided gameToken is invalid');
     }
 
-    const playerState: StartResponse = await this.connection.invoke(
-      'StartGame',
-      { rows: gameState.rows, cols: gameState.cols },
+    const playerState = await this.engineService.startGame(
+      gameState.rows,
+      gameState.cols,
     );
 
     await this.playerStateRepository.create({
@@ -47,7 +45,7 @@ export class ApiService {
       userId,
     });
 
-    await this.connection.send('AcceptMarker', gameState.userId);
+    await this.engineService.acceptMarker(fromUserId);
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
   }
@@ -61,21 +59,18 @@ export class ApiService {
   }
 
   public async shoot(userId: string, x: number, y: number) {
-    const gameState: GameState = await this.gameStateRepository.findByUserId(
+    const gameState: IGameState = await this.gameStateRepository.findByUserId(
       userId,
     );
     if (!gameState.turn) {
       throw new BadRequestException('Not your move');
     }
 
-    const opponentGameState: GameState = await this.gameStateRepository.findById(
+    const opponentGameState = await this.gameStateRepository.findById(
       gameState.opponentGameId,
     );
-    const shootResponse: ShootResponse = await this.connection.invoke(
-      'Shoot',
-      { x, y },
-      opponentGameState.playerState,
-    );
+    const shootResponse = await this.engineService.shoot(x, y, 'field');
+
     await this.gameStateRepository.updateOneById(opponentGameState._id, {
       playerState: shootResponse.playerState,
     });
@@ -89,7 +84,7 @@ export class ApiService {
       });
     }
 
-    await this.connection.send('ShootMarker', opponentGameState.userId);
+    await this.engineService.shootMarker(opponentGameState.userId);
   }
 
   public async state(userId: string) {
@@ -98,10 +93,7 @@ export class ApiService {
       playerGameState.opponentGameId,
     );
 
-    opponentGameState.playerState = await this.connection.invoke(
-      'Cleanse',
-      opponentGameState.playerState,
-    );
+    const response = await this.engineService.cleanse([['a']]);
 
     return {
       playerGameState,
@@ -115,18 +107,13 @@ export class ApiService {
     userId: string,
     gameToken: string,
   ) {
-    const playerState: IPlayerState = await this.connection.invoke(
-      'StartGame',
-      {
-        rows,
-        cols,
-      },
-    );
-
+    const playerState = await this.engineService.startGame(rows, cols);
     await this.gameStateRepository.create({
       token: gameToken,
       status: GameStatus.NotStarted,
       turn: userId,
+      rows,
+      cols,
     });
   }
 }
