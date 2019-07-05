@@ -31,11 +31,4 @@ export class PlayerStateRepository {
   ): Promise<IPlayerState> {
     return this.playerStateModel.updateOne({ _id: id }, doc).exec();
   }
-
-  public updateOneByUserId(
-    userId: string,
-    doc: Partial<IPlayerState>,
-  ): Promise<IPlayerState> {
-    return this.playerStateModel.updateOne({ userId }, doc).exec();
-  }
 }

@@ -12,10 +12,8 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noImplicitAny": true,
-    "strictFunctionTypes": true,
+    "strictFunctionTypes": true
   },
   "exclude": ["node_modules"]
 }

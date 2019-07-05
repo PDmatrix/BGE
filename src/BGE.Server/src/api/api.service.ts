@@ -35,7 +35,7 @@ export class ApiService {
     return { gameToken, userToken };
   }
 
-  public async accept(userId: string, fromUserId: string, gameToken: string) {
+  public async accept(userId: string, gameToken: string) {
     const gameState = await this.gameStateRepository.findByGameToken(gameToken);
     if (!gameState) {
       throw new BadRequestException('Provided gameToken is invalid');
@@ -49,15 +49,15 @@ export class ApiService {
     await this.playerStateRepository.create({
       field: startResponse.field,
       gameStateId: gameState._id,
-      opponentStateId: fromUserId,
+      opponentId: gameState.userTurnId,
       userId,
     });
 
-    await this.playerStateRepository.updateOneByUserId(fromUserId, {
-      opponentStateId: userId,
+    await this.playerStateRepository.updateOneById(gameState.userTurnId, {
+      opponentId: userId,
     });
 
-    await this.engineService.acceptMarker(fromUserId);
+    await this.engineService.acceptMarker(gameState.userTurnId);
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
   }
@@ -115,7 +115,7 @@ export class ApiService {
     const gameState = await this.gameStateRepository.create({
       token: gameToken,
       status: GameStatus.NotStarted,
-      turn: userId,
+      userTurnId: userId,
       rows,
       cols,
     });
@@ -124,7 +124,7 @@ export class ApiService {
       userId,
       field: startResponse.field,
       gameStateId: gameState._id,
-      opponentStateId: undefined,
+      opponentId: undefined,
     });
   }
 }

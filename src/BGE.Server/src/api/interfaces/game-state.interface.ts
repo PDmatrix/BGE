@@ -10,7 +10,7 @@ export interface IGameState {
   readonly _id?: string;
   token: string;
   status: GameStatus;
-  turn: string | null;
+  userTurnId: string;
   rows: number;
   cols: number;
 }
