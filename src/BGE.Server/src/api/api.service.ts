@@ -27,33 +27,33 @@ export class ApiService {
     private readonly authService: AuthService,
   ) {}
 
+  public async start(userId: string, cols: number, rows: number) {
+    const gameToken = generateRandomToken();
+    await this.createGame(cols, rows, userId, gameToken);
+
+    const userToken = await this.authService.getToken(userId);
+    return { gameToken, userToken };
+  }
+
   public async accept(userId: string, fromUserId: string, gameToken: string) {
     const gameState = await this.gameStateRepository.findByGameToken(gameToken);
     if (!gameState) {
       throw new BadRequestException('Provided gameToken is invalid');
     }
 
-    const playerState = await this.engineService.startGame(
+    const startResponse = await this.engineService.startGame(
       gameState.rows,
       gameState.cols,
     );
 
     await this.playerStateRepository.create({
-      field: playerState.field,
+      field: startResponse.field,
       gameStateId: gameState._id,
       opponentStateId: fromUserId,
       userId,
     });
 
     await this.engineService.acceptMarker(fromUserId);
-    const userToken = await this.authService.getToken(userId);
-    return { gameToken, userToken };
-  }
-
-  public async start(userId: string, cols: number, rows: number) {
-    const gameToken = generateRandomToken();
-    await this.createGame(cols, rows, userId, gameToken);
-
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
   }
@@ -107,13 +107,20 @@ export class ApiService {
     userId: string,
     gameToken: string,
   ) {
-    const playerState = await this.engineService.startGame(rows, cols);
-    await this.gameStateRepository.create({
+    const startResponse = await this.engineService.startGame(rows, cols);
+    const gameState = await this.gameStateRepository.create({
       token: gameToken,
       status: GameStatus.NotStarted,
       turn: userId,
       rows,
       cols,
+    });
+
+    await this.playerStateRepository.create({
+      userId,
+      field: startResponse.field,
+      gameStateId: gameState._id,
+      opponentStateId: undefined,
     });
   }
 }
