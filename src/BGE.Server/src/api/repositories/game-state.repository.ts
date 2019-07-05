@@ -22,7 +22,10 @@ export class GameStateRepository {
     return this.gameStateModel.findOne({ token }).exec();
   }
 
-  public updateOneById(id: string, doc: IGameState): Promise<IGameState> {
+  public updateOneById(
+    id: string,
+    doc: Partial<IGameState>,
+  ): Promise<IGameState> {
     return this.gameStateModel.updateOne({ _id: id }, doc).exec();
   }
 }

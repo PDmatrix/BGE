@@ -53,6 +53,10 @@ export class ApiService {
       userId,
     });
 
+    await this.playerStateRepository.updateOneByUserId(fromUserId, {
+      opponentStateId: userId,
+    });
+
     await this.engineService.acceptMarker(fromUserId);
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
