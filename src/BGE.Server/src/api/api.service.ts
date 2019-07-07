@@ -1,9 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
-import { ShootResponse } from './dto/shoot-response.dto';
 import { EngineService } from './engine.service';
-import { GameStatus, IGameState } from './interfaces/game-state.interface';
-import { IPlayerState } from './interfaces/player-state.interface';
+import { GameStatus } from './interfaces/game-state.interface';
 import { GameStateRepository } from './repositories/game-state.repository';
 import { PlayerStateRepository } from './repositories/player-state.repository';
 
@@ -53,56 +51,13 @@ export class ApiService {
       userId,
     });
 
-    await this.playerStateRepository.updateOneById(gameState.userTurnId, {
+    await this.playerStateRepository.updateOneByUserId(gameState.userTurnId, {
       opponentId: userId,
     });
 
     await this.engineService.acceptMarker(gameState.userTurnId);
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
-  }
-
-  public async shoot(userId: string, x: number, y: number) {
-    const gameState: IGameState = await this.gameStateRepository.findByUserId(
-      userId,
-    );
-    if (!gameState.turn) {
-      throw new BadRequestException('Not your move');
-    }
-
-    const opponentGameState = await this.gameStateRepository.findById(
-      gameState.opponentGameId,
-    );
-    const shootResponse = await this.engineService.shoot(x, y, 'field');
-
-    await this.gameStateRepository.updateOneById(opponentGameState._id, {
-      playerState: shootResponse.playerState,
-    });
-
-    if (!shootResponse.isHit) {
-      await this.gameStateRepository.updateOneById(opponentGameState._id, {
-        turn: true,
-      });
-      await this.gameStateRepository.updateOneById(gameState._id, {
-        turn: false,
-      });
-    }
-
-    await this.engineService.shootMarker(opponentGameState.userId);
-  }
-
-  public async state(userId: string) {
-    const playerGameState = await this.gameStateRepository.findByUserId(userId);
-    const opponentGameState = await this.gameStateRepository.findById(
-      playerGameState.opponentGameId,
-    );
-
-    const response = await this.engineService.cleanse([['a']]);
-
-    return {
-      playerGameState,
-      opponentGameState,
-    };
   }
 
   private async createGame(
@@ -124,7 +79,7 @@ export class ApiService {
       userId,
       field: startResponse.field,
       gameStateId: gameState._id,
-      opponentId: undefined,
+      opponentId: null,
     });
   }
 }

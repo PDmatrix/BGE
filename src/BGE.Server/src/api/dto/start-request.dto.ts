@@ -8,11 +8,11 @@ export class StartRequest {
   @IsNumber()
   @Min(6)
   @Max(15)
-  readonly rows?: number = 8;
+  readonly rows: number = 8;
 
   @IsOptional()
   @IsNumber()
   @Min(6)
   @Max(15)
-  readonly cols?: number = 8;
+  readonly cols: number = 8;
 }

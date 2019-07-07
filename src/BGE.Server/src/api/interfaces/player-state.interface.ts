@@ -4,7 +4,7 @@ import { IGameState } from './game-state.interface';
 export interface IPlayerState {
   readonly _id?: string;
   userId: string;
-  opponentId: IPlayerState['_id'];
+  opponentId: string | null;
   gameStateId: IGameState['_id'];
   field: string[][];
 }
