@@ -1,9 +1,9 @@
 import { HubConnection } from '@aspnet/signalr';
 import { Inject } from '@nestjs/common';
 import { SIGNALR_CONNECTION } from '../common/constants';
-import { CleanseResponse } from './dto/cleanse-response.dto';
-import { ShootResponse } from './dto/shoot-response.dto';
-import { StartResponse } from './dto/start-response.dto';
+import { CleanseResponse } from './dtos/cleanse-response.dto';
+import { ShootResponse } from './dtos/shoot-response.dto';
+import { StartResponse } from './dtos/start-response.dto';
 
 export class EngineService {
   constructor(

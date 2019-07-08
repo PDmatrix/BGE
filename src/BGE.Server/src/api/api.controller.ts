@@ -1,8 +1,8 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { SignalRGuard } from '../common/guards/signalr.guard';
 import { ApiService } from './api.service';
-import { AcceptRequest } from './dto/accept-request.dto';
-import { StartRequest } from './dto/start-request.dto';
+import { AcceptRequest } from './dtos/accept-request.dto';
+import { StartRequest } from './dtos/start-request.dto';
 
 @Controller('api')
 @UseGuards(SignalRGuard)
