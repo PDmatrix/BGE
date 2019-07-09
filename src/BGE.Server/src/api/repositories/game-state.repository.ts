@@ -23,7 +23,7 @@ export class GameStateRepository {
   }
 
   public updateOneById(
-    id: string,
+    id: string | undefined,
     doc: Partial<IGameState>,
   ): Promise<IGameState> {
     return this.gameStateModel.updateOne({ _id: id }, doc).exec();

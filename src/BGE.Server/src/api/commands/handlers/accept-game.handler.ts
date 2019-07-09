@@ -2,10 +2,11 @@ import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { AuthService } from '../../../auth/auth.service';
 import { EngineService } from '../../engine.service';
+import { GameAcceptedEvent } from '../../events/impl/game-accepted.event';
+import { GameStatus } from '../../interfaces/game-state.interface';
 import { GameStateRepository } from '../../repositories/game-state.repository';
 import { PlayerStateRepository } from '../../repositories/player-state.repository';
 import { AcceptGameCommand } from '../impl/accept-game.command';
-import { GameAcceptedEvent } from '../../events/impl/game-accepted.event';
 
 @CommandHandler(AcceptGameCommand)
 export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
@@ -39,6 +40,10 @@ export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
 
     await this.playerStateRepository.updateOneByUserId(gameState.userTurnId, {
       opponentId: userId,
+    });
+
+    await this.gameStateRepository.updateOneById(gameState._id, {
+      status: GameStatus.Playing,
     });
 
     this.eventBus.publish(new GameAcceptedEvent(gameState.userTurnId));
