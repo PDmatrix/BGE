@@ -1,15 +1,16 @@
 import { BadRequestException } from '@nestjs/common';
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { AuthService } from '../../../auth/auth.service';
 import { EngineService } from '../../engine.service';
 import { GameStateRepository } from '../../repositories/game-state.repository';
 import { PlayerStateRepository } from '../../repositories/player-state.repository';
 import { AcceptGameCommand } from '../impl/accept-game.command';
+import { GameAcceptedEvent } from '../../events/impl/game-accepted.event';
 
 @CommandHandler(AcceptGameCommand)
 export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
   constructor(
-    private readonly publisher: EventPublisher,
+    private readonly eventBus: EventBus,
     private readonly engineService: EngineService,
     private readonly gameStateRepository: GameStateRepository,
     private readonly playerStateRepository: PlayerStateRepository,
@@ -40,7 +41,7 @@ export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
       opponentId: userId,
     });
 
-    await this.engineService.acceptMarker(gameState.userTurnId);
+    this.eventBus.publish(new GameAcceptedEvent(gameState.userTurnId));
     const userToken = await this.authService.getToken(userId);
     return { gameToken, userToken };
   }

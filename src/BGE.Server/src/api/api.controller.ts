@@ -7,7 +7,7 @@ import { AcceptRequest } from './dtos/accept-request.dto';
 import { StartRequest } from './dtos/start-request.dto';
 
 @Controller('api')
-@UseGuards(SignalRGuard)
+//@UseGuards(SignalRGuard)
 export class ApiController {
   constructor(private readonly commandBus: CommandBus) {}
 
