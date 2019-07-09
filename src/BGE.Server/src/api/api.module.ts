@@ -4,7 +4,6 @@ import { ConfigModule } from '../config/config.module';
 import { DatabaseModule } from '../database/database.module';
 import { ApiController } from './api.controller';
 import { apiProviders } from './api.providers';
-import { ApiService } from './api.service';
 import { EngineService } from './engine.service';
 import { GameStateRepository } from './repositories/game-state.repository';
 import { PlayerStateRepository } from './repositories/player-state.repository';
@@ -12,7 +11,6 @@ import { PlayerStateRepository } from './repositories/player-state.repository';
 @Module({
   controllers: [ApiController],
   providers: [
-    ApiService,
     EngineService,
     GameStateRepository,
     PlayerStateRepository,
