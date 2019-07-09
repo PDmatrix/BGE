@@ -10,33 +10,30 @@ export class EngineService {
     @Inject(SIGNALR_CONNECTION) private readonly connection: HubConnection,
   ) {}
 
-  public async startGame(
-    rows: number = 8,
-    cols: number = 8,
-  ): Promise<StartResponse> {
-    return await this.connection.invoke('StartGame', {
+  public startGame(rows: number, cols: number): Promise<StartResponse> {
+    return this.connection.invoke('StartGame', {
       rows,
       cols,
     });
   }
 
-  public async shoot(
+  public shoot(
     x: number,
     y: number,
     field: string[][],
   ): Promise<ShootResponse> {
-    return await this.connection.invoke('Shoot', {
+    return this.connection.invoke('Shoot', {
       x,
       y,
       field,
     });
   }
 
-  public async cleanse(field: string[][]): Promise<CleanseResponse> {
-    return await this.connection.invoke('Cleanse', { field });
+  public cleanse(field: string[][]): Promise<CleanseResponse> {
+    return this.connection.invoke('Cleanse', { field });
   }
 
-  public async acceptMarker(userId: string): Promise<void> {
+  public acceptMarker(userId: string): Promise<void> {
     return this.connection.send('AcceptMarker', userId);
   }
 
