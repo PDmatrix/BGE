@@ -37,7 +37,7 @@ export class EngineService {
     return this.connection.send('AcceptMarker', userId);
   }
 
-  public async shootMarker(userId: string): Promise<void> {
+  public shootMarker(userId: string): Promise<void> {
     return this.connection.send('ShootMarker', userId);
   }
 }
