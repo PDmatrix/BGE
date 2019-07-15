@@ -55,8 +55,9 @@ namespace BGE.Engine.Test
 			var shootResponse = _game.Shoot(new ShootRequest
 			{
 				X = x,
-				Y = y
-			}, playerState.Field);
+				Y = y,
+				Field = playerState.Field
+			});
 			shootResponse.Field[x - 1, y - 1].Should().Be(Constants.FieldHitSymbol);
 		}
 

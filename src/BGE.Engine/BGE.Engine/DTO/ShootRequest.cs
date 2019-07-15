@@ -11,6 +11,7 @@ namespace BGE.Engine.DTO
 	{
 		public int X { get; set; }
 		public int Y { get; set; }
+		public char[,] Field { get; set; }
 	}
 
     public static class ShootRequestExtensions

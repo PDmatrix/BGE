@@ -13,4 +13,8 @@ export class ShootRequest {
   @ApiModelProperty()
   @IsString()
   readonly userId: string;
+
+  @ApiModelProperty()
+  @IsString()
+  readonly gameToken: string;
 }

@@ -85,19 +85,19 @@ namespace BGE.Engine.Game
 			}
 		}
 
-		public ShootResponse Shoot(ShootRequest shootRequest, char[,] field)
+		public ShootResponse Shoot(ShootRequest shootRequest)
 		{
 			var x = shootRequest.X - 1;
 			var y = shootRequest.Y - 1;
 			var shootResponse = new ShootResponse
 			{
-				IsHit = field[x, y] == Constants.FieldShipSymbol
+				IsHit = shootRequest.Field[x, y] == Constants.FieldShipSymbol
 			};
-			field[x, y] =  shootResponse.IsHit 
+			shootRequest.Field[x, y] =  shootResponse.IsHit 
 				? Constants.FieldShipSinkSymbol 
 				: Constants.FieldHitSymbol;
 			
-			shootResponse.Field = field;
+			shootResponse.Field = shootRequest.Field;
 			return shootResponse;
 		}
 

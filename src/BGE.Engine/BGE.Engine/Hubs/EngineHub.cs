@@ -46,9 +46,9 @@ namespace BGE.Engine.Hubs
 		}
 		
 		[HubMethodName("Shoot")]
-		public Task<ShootResponse> Shoot(ShootRequest shootRequest, char[,] field)
+		public Task<ShootResponse> Shoot(ShootRequest shootRequest)
         {
-	        return Task.FromResult(_game.Shoot(shootRequest, field));
+	        return Task.FromResult(_game.Shoot(shootRequest));
 		}
 	}
 }
