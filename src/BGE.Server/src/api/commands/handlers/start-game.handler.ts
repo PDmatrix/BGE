@@ -45,7 +45,7 @@ export class StartGameHandler implements ICommandHandler<StartGameCommand> {
       userId,
       field: startResponse.field,
       gameStateId: gameState._id,
-      opponentId: null,
+      opponentId: '',
     });
   }
 }

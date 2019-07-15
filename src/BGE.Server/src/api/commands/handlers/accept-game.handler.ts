@@ -48,6 +48,6 @@ export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
 
     this.eventBus.publish(new GameAcceptedEvent(gameState.userTurnId));
     const userToken = await this.authService.getToken(userId);
-    return { userToken };
+    return { userToken, gameToken };
   }
 }
