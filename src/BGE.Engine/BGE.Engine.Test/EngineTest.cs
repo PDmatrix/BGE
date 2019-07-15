@@ -23,7 +23,7 @@ namespace BGE.Engine.Test
 				for (var j = 0; j < field.GetUpperBound(1) + 1; j++)
 				{
 					cells++;
-					if (field[i, j] != ' ')
+					if (field[i, j] != Constants.FieldEmptySymbol)
 						ships++;
 				}
 			}
@@ -56,8 +56,8 @@ namespace BGE.Engine.Test
 			{
 				X = x,
 				Y = y
-			}, playerState);
-			shootResponse.PlayerState.Field[x - 1, y - 1].Should().Be('X');
+			}, playerState.Field);
+			shootResponse.Field[x - 1, y - 1].Should().Be(Constants.FieldHitSymbol);
 		}
 
         [Theory]

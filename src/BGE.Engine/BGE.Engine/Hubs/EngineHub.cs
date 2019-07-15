@@ -46,10 +46,9 @@ namespace BGE.Engine.Hubs
 		}
 		
 		[HubMethodName("Shoot")]
-		public async Task<ShootResponse> Shoot(ShootRequest shootRequest, PlayerState playerState)
+		public Task<ShootResponse> Shoot(ShootRequest shootRequest, char[,] field)
         {
-            await shootRequest.ValidateAndThrowAsync(playerState);
-			return _game.Shoot(shootRequest, playerState);
+	        return Task.FromResult(_game.Shoot(shootRequest, field));
 		}
 	}
 }
