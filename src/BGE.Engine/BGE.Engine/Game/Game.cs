@@ -96,8 +96,10 @@ namespace BGE.Engine.Game
 			shootRequest.Field[x, y] =  shootResponse.IsHit 
 				? Constants.FieldShipSinkSymbol 
 				: Constants.FieldHitSymbol;
-			
+
+			var ships = shootRequest.Field.Cast<char>().Count(symbol => symbol == Constants.FieldShipSymbol);
 			shootResponse.Field = shootRequest.Field;
+			shootResponse.IsWinner = ships == 0;
 			return shootResponse;
 		}
 

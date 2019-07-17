@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { EngineService } from '../../engine.service';
 import { PlayerShotEvent } from '../../events/impl/player-shot.event';
+import { GameStatus } from '../../interfaces/game-state.interface';
 import { IPlayerState } from '../../interfaces/player-state.interface';
 import { GameStateRepository } from '../../repositories/game-state.repository';
 import { PlayerStateRepository } from '../../repositories/player-state.repository';
@@ -36,15 +37,34 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
       throw new BadRequestException('Player state is not found');
     }
 
-    const response = await this.engineService.shoot(x, y, userState.field);
+    const opponentUserState = await this.playerStateRepository.findByUserId(
+      userState.opponentId,
+    );
+
+    if (opponentUserState === null) {
+      throw new BadRequestException('Opponent state is not found');
+    }
+
+    const response = await this.engineService.shoot(
+      x,
+      y,
+      opponentUserState.field,
+    );
     await this.playerStateRepository.updateOneByUserId(userState.opponentId, {
       field: response.field,
     });
-    if (!response.isHit) {
+
+    if (response.isWinner) {
+      await this.gameStateRepository.updateOneById(gameState._id, {
+        winnerId: userState.userId,
+        status: GameStatus.Finished,
+      });
+    } else if (!response.isHit) {
       await this.gameStateRepository.updateOneById(gameState._id, {
         userTurnId: userState.opponentId,
       });
     }
+
     this.eventBus.publish(new PlayerShotEvent(gameState.userTurnId));
   }
 }

@@ -6,4 +6,5 @@ export const GameStateSchema = new Schema({
   userTurnId: String,
   rows: Number,
   cols: Number,
+  winnerId: String,
 });

@@ -13,6 +13,7 @@ export interface IGameState {
   userTurnId: string;
   rows: number;
   cols: number;
+  winnerId: string | null;
 }
 
 export type GameState = IGameState & Document;
