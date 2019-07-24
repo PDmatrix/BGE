@@ -39,6 +39,7 @@ export class StartGameHandler implements ICommandHandler<StartGameCommand> {
       userTurnId: userId,
       rows,
       cols,
+      winnerId: null,
     });
 
     await this.playerStateRepository.create({
