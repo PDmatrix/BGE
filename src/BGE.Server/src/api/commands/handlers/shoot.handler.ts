@@ -25,7 +25,7 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
     y,
   }: ShootCommand): Promise<void> {
     const gameState = await this.getGameStateByToken(gameToken);
-    ShootHandler.validateTurn(gameState.userTurnId, userId);
+    validateTurn(gameState.userTurnId, userId);
 
     const userState = await this.getPlayerState(userId);
     const opponentUserState = await this.getPlayerState(userState.opponentId);
@@ -53,12 +53,6 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
     }
 
     return gameState;
-  }
-
-  private static validateTurn(userTurnId: string, userId: string): void {
-    if (userTurnId !== userId) {
-      throw new BadRequestException('Not your turn');
-    }
   }
 
   private async getPlayerState(userId: string): Promise<IPlayerState> {
@@ -101,5 +95,11 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
     return this.gameStateRepository.updateOneById(gameId, {
       userTurnId: userId,
     });
+  }
+}
+
+function validateTurn(userTurnId: string, userId: string): void {
+  if (userTurnId !== userId) {
+    throw new BadRequestException('Not your turn');
   }
 }

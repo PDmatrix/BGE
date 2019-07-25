@@ -16,9 +16,7 @@ export class StartGameHandler implements ICommandHandler<StartGameCommand> {
     private readonly authService: AuthService,
   ) {}
 
-  async execute(command: StartGameCommand) {
-    const { userId, rows, cols } = command;
-
+  async execute({ userId, rows, cols }: StartGameCommand) {
     const gameToken = generateRandomToken();
     await this.createGame(cols, rows, userId, gameToken);
 
