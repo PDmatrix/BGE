@@ -1,6 +1,5 @@
 import requests
 from requests.exceptions import HTTPError
-import json
 
 
 class Api:
@@ -15,15 +14,16 @@ class Api:
         data = {"userId": user_id}
         return _send_request(f'{self.url}/start', data)
 
-    def shoot(self, x: int, y: int, user_id: str):
+    def shoot(self, x: int, y: int, user_id: str, game_token: str):
         return _send_request(f'{self.url}/shoot', {
             "userId": user_id,
+            "gameToken": game_token,
             "x": x,
             "y": y
         })
 
-    def state(self, user_id: str):
-        data = {"userId": user_id}
+    def state(self, user_id: str, game_token: str):
+        data = {"userId": user_id, "gameToken": game_token}
         return _send_request(f'{self.url}/state', data)
 
 

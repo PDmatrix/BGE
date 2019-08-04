@@ -17,6 +17,10 @@ export class PlayerStateRepository {
     return new this.playerStateModel(doc).save();
   }
 
+  public find(filter: Partial<IPlayerState>): Promise<IPlayerState | null> {
+    return this.playerStateModel.findOne(filter).exec();
+  }
+
   public findByUserId(userId: string): Promise<IPlayerState | null> {
     return this.playerStateModel.findOne({ userId }).exec();
   }
@@ -30,6 +34,13 @@ export class PlayerStateRepository {
     doc: Partial<IPlayerState>,
   ): Promise<IPlayerState> {
     return this.playerStateModel.updateOne({ _id: id }, doc).exec();
+  }
+
+  public updateOne(
+    filter: Partial<IPlayerState>,
+    doc: Partial<IPlayerState>,
+  ): Promise<IPlayerState> {
+    return this.playerStateModel.updateOne(filter, doc).exec();
   }
 
   public updateOneByUserId(

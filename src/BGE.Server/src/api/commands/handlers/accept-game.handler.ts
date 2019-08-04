@@ -22,7 +22,11 @@ export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
   public async execute({ userId, gameToken }: AcceptGameCommand) {
     const gameState = await this.getGameStateByToken(gameToken);
     await this.createGame(gameState, userId);
-    await this.updateOpponentId(gameState.userTurnId, userId);
+    await this.updateOpponentId(
+      gameState.userTurnId,
+      userId,
+      gameState._id || '',
+    );
     await this.updateGameStatus(gameState._id);
     this.eventBus.publish(new GameAcceptedEvent(gameState.userTurnId));
     const userToken = await this.authService.getToken(userId);
@@ -58,10 +62,14 @@ export class AcceptGameHandler implements ICommandHandler<AcceptGameCommand> {
   private updateOpponentId(
     userId: string,
     opponentId: string,
+    gameStateId: string,
   ): Promise<IPlayerState> {
-    return this.playerStateRepository.updateOneByUserId(userId, {
-      opponentId,
-    });
+    return this.playerStateRepository.updateOne(
+      { userId, gameStateId },
+      {
+        opponentId,
+      },
+    );
   }
 
   private updateGameStatus(

@@ -5,4 +5,8 @@ export class StateRequest {
   @ApiModelProperty()
   @IsString()
   readonly userId: string;
+
+  @ApiModelProperty()
+  @IsString()
+  readonly gameToken: string;
 }

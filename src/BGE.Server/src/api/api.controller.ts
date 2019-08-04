@@ -7,6 +7,8 @@ import { StartGameCommand } from './commands/impl/start-game.command';
 import { AcceptRequest } from './dtos/accept-request.dto';
 import { ShootRequest } from './dtos/shoot-request.dto';
 import { StartRequest } from './dtos/start-request.dto';
+import { StateRequest } from './dtos/state-request.dto';
+import { StateCommand } from './commands/impl/state.command';
 
 @Controller('api')
 @UseGuards(SignalRGuard)
@@ -23,6 +25,14 @@ export class ApiController {
         shootRequest.userId,
         shootRequest.gameToken,
       ),
+    );
+  }
+
+  @HttpCode(200)
+  @Post('/state')
+  public state(@Body() stateRequest: StateRequest) {
+    return this.commandBus.execute(
+      new StateCommand(stateRequest.userId, stateRequest.gameToken),
     );
   }
 

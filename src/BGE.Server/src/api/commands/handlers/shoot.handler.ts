@@ -27,23 +27,31 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
     const gameState = await this.getGameStateByToken(gameToken);
     validateTurn(gameState.userTurnId, userId);
 
-    const userState = await this.getPlayerState(userId);
-    const opponentUserState = await this.getPlayerState(userState.opponentId);
+    if (gameState.status !== GameStatus.Playing) {
+      throw new BadRequestException('Wrong game status');
+    }
+
+    const userState = await this.getPlayerState(userId, gameState._id || '');
+    const opponentUserState = await this.getPlayerState(
+      userState.opponentId,
+      gameState._id || '',
+    );
 
     const response = await this.processShoot(
       x,
       y,
       opponentUserState.field,
       opponentUserState.userId,
+      gameState._id || '',
     );
 
     if (response.isWinner) {
       await this.updateWinner(gameState._id, userState.userId);
-    } else {
+    } else if (!response.isHit) {
       await this.updateNextTurn(gameState._id, opponentUserState.userId);
     }
 
-    this.eventBus.publish(new PlayerShotEvent(gameState.userTurnId));
+    this.eventBus.publish(new PlayerShotEvent(userState.opponentId));
   }
 
   private async getGameStateByToken(gameToken: string): Promise<IGameState> {
@@ -55,8 +63,14 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
     return gameState;
   }
 
-  private async getPlayerState(userId: string): Promise<IPlayerState> {
-    const playerState = await this.playerStateRepository.findByUserId(userId);
+  private async getPlayerState(
+    userId: string,
+    gameStateId: string,
+  ): Promise<IPlayerState> {
+    const playerState = await this.playerStateRepository.find({
+      userId,
+      gameStateId,
+    });
     if (playerState === null) {
       throw new BadRequestException('Player state is not found');
     }
@@ -69,11 +83,15 @@ export class ShootHandler implements ICommandHandler<ShootCommand> {
     y: number,
     field: string[][],
     userId: string,
+    gameStateId: string,
   ): Promise<ShootResponse> {
     const response = await this.engineService.shoot(x, y, field);
-    await this.playerStateRepository.updateOneByUserId(userId, {
-      field: response.field,
-    });
+    await this.playerStateRepository.updateOne(
+      { userId, gameStateId },
+      {
+        field: response.field,
+      },
+    );
 
     return response;
   }
